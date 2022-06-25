@@ -1,10 +1,11 @@
 # F9p-ntrip-esp32
-Code pour utiliser un esp32 pour injecter directement le rtcm3 dans le f9p et un rs232 ou blutooth en sortie
-utile pour fournir une trame nmea corrigée sur une console qui ne gere pas le rtk
+Code pour utiliser un esp32 pour injecter directement le rtcm3 dans le f9p et un rs232 ou bluetooth en sortie  
+utile pour fournir une trame nmea corrigée sur une console qui ne gere pas le rtk  
+  
 Librairies
-https://github.com/GLAY-AK2/NTRIP-client-for-Arduino
-esp32 maj : prend en charge les nouvelles cartes bien plus performante comme esp32-s3, esp32-c3 ...
-https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+https://github.com/GLAY-AK2/NTRIP-client-for-Arduino  
+esp32 maj : prend en charge les nouvelles cartes bien plus performante comme esp32-s3, esp32-c3 ...  
+https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json  
 
 
 
