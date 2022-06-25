@@ -4,7 +4,7 @@ utile pour fournir une trame nmea corrigée sur une console qui ne gere pas le r
   
 Librairies
 https://github.com/GLAY-AK2/NTRIP-client-for-Arduino  
-esp32 maj : prend en charge les nouvelles cartes bien plus performante comme esp32-s3, esp32-c3 ...  
+esp32 maj : prend en charge les nouvelles cartes bien plus performante comme esp32-s3 (pas de bluetooth standard), esp32-c3(premier choix) ...  
 https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json  
 
 
