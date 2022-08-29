@@ -1,7 +1,3 @@
-// connexions
-// tx f9p >>>> gpio23 esp32
-// rx f9p >>>> gpio17 esp32
-
 #include <WiFi.h>
 #include "NTRIPClient.h"
 
@@ -14,7 +10,7 @@ HardwareSerial Serialrx(1);
 
 char* host = "caster.centipede.fr";
 int httpPort = 2101;
-char* mntpnt = "LRSEC";
+char* mntpnt = "";
 char* user = "centipede";
 char* passwd = "centipede";
 NTRIPClient ntrip_c;
@@ -22,22 +18,22 @@ NTRIPClient ntrip_c;
 const char* udpAddress = "192.168.1.255";
 const int udpPort = 9999;
 
-int trans = 2;  //0 = serial, 1 = udp, 2 = bt, 3 = serialrx, 4 = myserial
+int trans = 1;  //0 = serial, 1 = udp, 2 = bt, 3 = serialrx, 4 = myserial
 
 WiFiUDP udp;
 WiFiMulti wifiMulti;
 
-#include "BluetoothSerial.h"
-
-#if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
-#error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
-#endif
-
-#if !defined(CONFIG_BT_SPP_ENABLED)
-#error Serial Bluetooth not available or not enabled. It is only available for the ESP32 chip.
-#endif
-
-BluetoothSerial SerialBT;
+//#include "BluetoothSerial.h"
+//
+//#if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
+//#error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
+//#endif
+//
+//#if !defined(CONFIG_BT_SPP_ENABLED)
+//#error Serial Bluetooth not available or not enabled. It is only available for the ESP32 chip.
+//#endif
+//
+//BluetoothSerial SerialBT;
 
 void setup() {
   Serial.begin(115200);
@@ -46,12 +42,12 @@ void setup() {
   delay(100);
   Serialrx.begin(115200, SERIAL_8N1, 23, 22);
   delay(100);
-  if (trans == 2) {
-    SerialBT.begin("f9hpbt");  //Bluetooth device name
-    Serial.println("Data out via bluetooth");
-  }
+//  if (trans == 2) {
+//    SerialBT.begin("f9hpbt");  //Bluetooth device name
+//    Serial.println("Data out via bluetooth");
+//  }
 
-  wifiMulti.addAP("TP-Link_Outdoor_870276", "");
+  wifiMulti.addAP("ssid", "password");
   wifiMulti.addAP("CATS41", "");
   wifiMulti.addAP("ssid_from_AP_3", "your_password_for_AP_3");
   wifiMulti.addAP("ssid_from_AP_4", "your_password_for_AP_4");
@@ -107,9 +103,9 @@ void loop() {
         udp.print(s);
         udp.endPacket();
         break;
-      case 2:  //bluetooth out
-        SerialBT.println(s);
-        break;
+//      case 2:  //bluetooth out
+//        SerialBT.println(s);
+//        break;
       case 3:  //serialrx out
         Serialrx.println(s);
         break;
