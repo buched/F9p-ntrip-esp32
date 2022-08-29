@@ -13,3 +13,5 @@ Pour une utilisation bluetooth, il faut un esp32 standard. le code pour c3 sera 
 or  
 
 ![photo_2022-06-11_14-27-14](https://user-images.githubusercontent.com/32975584/173219745-3c69165b-3083-4c63-ab6b-fc04abe8334d.jpg)
+
+![Capture d’écran 2022-08-29 192657](https://user-images.githubusercontent.com/32975584/187261824-5b02ef2c-bc4a-482e-aa8f-ffc1788b9145.png)
