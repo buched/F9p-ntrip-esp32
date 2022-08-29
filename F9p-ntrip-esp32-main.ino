@@ -18,7 +18,7 @@ NTRIPClient ntrip_c;
 const char* udpAddress = "192.168.1.255";
 const int udpPort = 9999;
 
-int trans = 1;  //0 = serial, 1 = udp, 2 = bt, 3 = serialrx, 4 = myserial
+int trans = 0;  //0 = serial, 1 = udp, 2 = bt, 3 = serialrx, 4 = myserial
 
 WiFiUDP udp;
 WiFiMulti wifiMulti;
