@@ -8,21 +8,21 @@
 HardwareSerial MySerial(2);
 HardwareSerial Serialrx(1);
 
-char* host = "caster.centipede.fr";
-int httpPort = 2101;
-char* mntpnt = "";
-char* user = "centipede";
-char* passwd = "centipede";
+char* host = "";//enter caster server adress
+int httpPort = ;//enter caster server port
+char* mntpnt = "";//enter mountpoint
+char* user = "";//enter caster username
+char* passwd = "";//enter caster password
 NTRIPClient ntrip_c;
 
 const char* udpAddress = "192.168.1.255";
 const int udpPort = 9999;
 
-int trans = 0;  //0 = serial, 1 = udp, 2 = bt, 3 = serialrx, 4 = myserial
+int trans = 0;  //0 = serial, 1 = udp, 2 = bt, 3 = serialrx, 4 = myserial Choose wich out you want use. for rs232 set 0 et connect tx f9p directly to rs232 module
 
 WiFiUDP udp;
 WiFiMulti wifiMulti;
-
+// uncomment this to use bluetooth but you need set the good partition scheme like picture
 //#include "BluetoothSerial.h"
 //
 //#if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
@@ -38,7 +38,7 @@ WiFiMulti wifiMulti;
 void setup() {
   Serial.begin(115200);
   delay(500);
-  MySerial.begin(115200, SERIAL_8N1, 16, 17);
+  MySerial.begin(115200, SERIAL_8N1, 16, 17);//serial port to send rtcm to f9p
   delay(100);
   Serialrx.begin(115200, SERIAL_8N1, 23, 22);
   delay(100);
@@ -49,9 +49,6 @@ void setup() {
 
   wifiMulti.addAP("ssid", "password");
   wifiMulti.addAP("CATS41", "");
-  wifiMulti.addAP("ssid_from_AP_3", "your_password_for_AP_3");
-  wifiMulti.addAP("ssid_from_AP_4", "your_password_for_AP_4");
-  wifiMulti.addAP("ssid_from_AP_5", "your_password_for_AP_5");
 
   Serial.println("Connection au Wifi...");
 
