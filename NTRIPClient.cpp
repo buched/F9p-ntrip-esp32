@@ -5,12 +5,18 @@ bool NTRIPClient::reqSrcTbl(char* host,int &port)
       Serial.print("Cannot connect to ");
       Serial.println(host);
       return false;
-  }/*p = String("GET ") + String("/") + String(" HTTP/1.0\r\n");
-  p = p + String("User-Agent: NTRIP Enbeded\r\n");*/
-  print(
-      "GET / HTTP/1.0\r\n"
-      "User-Agent: NTRIPClient for Arduino v1.0\r\n"
-      );
+  }
+  String p;
+  p = String("GET /");
+  p = p + String(" HTTP/1.0\r\n");
+  p = p + String("Host: caster.centipede.fr:2101\r\n");
+  p = p + String("User-Agent: NTRIP Client/buchedv1.01\r\n");
+  p = p + String("Accept: text/html\r\n");
+  p = p + String("User-Agent: Mozilla/5.0\r\n");
+  p = p + String("Connection: keep-alive\r\n");
+  p = p + String("\r\n");
+  print(p);
+
   unsigned long timeout = millis();
   while (available() == 0) {
      if (millis() - timeout > 5000) {
@@ -20,16 +26,16 @@ bool NTRIPClient::reqSrcTbl(char* host,int &port)
      }
      delay(10);
   }
-  char buffer[50];
+  char buffer[12];
   readLine(buffer,sizeof(buffer));
-  if(strncmp((char*)buffer,"SOURCETABLE 200 OK",17))
+  if(strstr(buffer,"SOURCETABLE 200 OK")!=NULL)
   {
     Serial.print((char*)buffer);
     return false;
   }
   return true;
-    
 }
+
 bool NTRIPClient::reqRaw(char* host,int &port,char* mntpnt,char* user,char* psw)
 {
     if(!connect(host,port))return false;
