@@ -12,6 +12,11 @@ class NTRIPClient : public WiFiClient{
   bool reqRaw(char* host,int &port,char* mntpnt); //non user
   int readLine(char* buffer,int size);
   void sendGGA(const char* ggaMessage, const char* host, int port, const char* user, const char* passwd, const char* mntpnt);
-};
+  void enqueueGGA(String message);
+  void setLastGGA(String gga);
+  String getLastGGA();
 
+private:
+    String lastGGA;  // Stocke le dernier message GGA reçu
+};
 #endif

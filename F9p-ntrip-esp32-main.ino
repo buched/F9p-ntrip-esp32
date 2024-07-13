@@ -5,22 +5,22 @@
 HardwareSerial MySerial(2);
 HardwareSerial Serialrx(1);
 
-const char* ssid     = "ici"; // "your_ssid";
-const char* password = "12345678"; // "your_password";
+const char* ssid     = "your_ssid";
+const char* password = "your_password";
 IPAddress server(192, 168, 1, 100);  // IP address of the server
 int port = 80;
 
-char* host = "caster.centipede.fr";//"castera.ntrip.eu.org"; // "ntrip caster host";
+char* host = "ntrip caster host";
 int httpPort = 2101; // port 2101 is default port of NTRIP caster
-char* mntpnt = "CT02"; // "ntrip caster's mountpoint";
-char* user   = "jancelin"; // "ntrip caster's client user";
-char* passwd = ""; // "ntrip caster's client password";
+char* mntpnt = "ntrip caster's mountpoint";
+char* user   = "ntrip caster's client user";
+char* passwd = "ntrip caster's client password";
 NTRIPClient ntrip_c;
 
 const char* udpAddress = "192.168.1.255";
 const int udpPort = 9999;
 
-int trans = 0;  // 0 = serial, 1 = udp, 2 = tcp client, 3 = serialrx, 4 = myserial Choose which output you want to use. for RS232 set 0 and connect tx F9P directly to RS232 module
+int trans = 2;  // 0 = serial, 1 = udp, 2 = tcp client, 3 = serialrx, 4 = myserial Choose which output you want to use. for RS232 set 0 and connect tx F9P directly to RS232 module
 
 WiFiUDP udp;
 
@@ -82,28 +82,27 @@ void loop() {
     if (currentMillis - previousMillis >= interval) {
         previousMillis = currentMillis;
 
-        // Assume ggaMessage is updated regularly with the correct GGA string
-        if (ggaMessage != "") {
-            ntrip_c.sendGGA(ggaMessage.c_str(), host, httpPort, user, passwd, mntpnt);
+        // Envoyer le dernier message GGA stocké
+        String lastGGA = ntrip_c.getLastGGA();
+        if (lastGGA != "") {
+            ntrip_c.sendGGA(lastGGA.c_str(), host, httpPort, user, passwd, mntpnt);
+            Serial.println("Sent GGA: " + lastGGA);  // Log sent GGA message
+        } else {
+            Serial.println("No GGA message to send.");
         }
+    }
 
-        // Read NMEA messages
-        while (Serialrx.available()) {
-            char c = Serialrx.read();
-            if (c == '\n' || c == '\r') {
-                if (nmeaMessage.startsWith("$GNGGA")) {
-                    ggaMessage = nmeaMessage;
-                    // Serial.println("Extracted GGA: " + ggaMessage);  // Log extracted GGA message
-                }
-                nmeaMessage = "";
-            } else {
-                nmeaMessage += c;
+    // Lire les messages NMEA
+    while (Serialrx.available()) {
+        char c = Serialrx.read();
+        if (c == '\n' || c == '\r') {
+            if (nmeaMessage.startsWith("$GNGGA")) {
+                ntrip_c.setLastGGA(nmeaMessage); // Stocker le dernier message GGA reçu
+                Serial.println("Extracted GGA: " + nmeaMessage);  // Log extracted GGA message
             }
-        }
-
-        if (ggaMessage.length() > 0) {
-            ntripClient.sendGGA(ggaMessage.c_str(), host, httpPort, user, passwd, mntpnt);
-            Serial.println("Sent GGA: " + ggaMessage);  // Log sent GGA message
+            nmeaMessage = "";
+        } else {
+            nmeaMessage += c;
         }
     }
 
