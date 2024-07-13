@@ -12,15 +12,6 @@ class NTRIPClient : public WiFiClient{
   bool reqRaw(char* host,int &port,char* mntpnt); //non user
   int readLine(char* buffer,int size);
   void sendGGA(const char* ggaMessage, const char* host, int port, const char* user, const char* passwd, const char* mntpnt);
-  void enqueueGGA(String message);
-  String dequeueGGA();
-  bool isQueueEmpty();
-
-private:
-  static const int queueSize = 10;
-  String ggaQueue[queueSize];
-  int queueFront = 0;
-  int queueRear = 0;
-  int queueCount = 0;
 };
+
 #endif

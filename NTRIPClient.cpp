@@ -127,28 +127,3 @@ void NTRIPClient::sendGGA(const char* ggaMessage, const char* host, int port, co
     print("\r\n");
     Serial.println("NTRIPClient sent GGA: " + String(ggaMessage));
 }
-
-void NTRIPClient::enqueueGGA(String message) {
-    if (queueCount < queueSize) {
-        ggaQueue[queueRear] = message;
-        queueRear = (queueRear + 1) % queueSize;
-        queueCount++;
-    } else {
-        Serial.println("Queue is full. Message dropped.");
-    }
-}
-
-String NTRIPClient::dequeueGGA() {
-    if (queueCount > 0) {
-        String message = ggaQueue[queueFront];
-        queueFront = (queueFront + 1) % queueSize;
-        queueCount--;
-        return message;
-    } else {
-        return "";
-    }
-}
-
-bool NTRIPClient::isQueueEmpty() {
-    return queueCount == 0;
-}
