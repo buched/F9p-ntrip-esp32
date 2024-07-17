@@ -125,7 +125,7 @@ void NTRIPClient::sendGGA(const char* ggaMessage, const char* host, int port, co
     print(p);
     print(ggaMessage);
     print("\r\n");
-    Serial.println("NTRIPClient sent GGA: " + String(ggaMessage));
+    //Serial.println("NTRIPClient sent GGA: " + String(ggaMessage));
 }
 
 void NTRIPClient::setLastGGA(String gga) {
@@ -135,3 +135,4 @@ void NTRIPClient::setLastGGA(String gga) {
 String NTRIPClient::getLastGGA() {
     return lastGGA;
 }
+

@@ -20,3 +20,4 @@ private:
     String lastGGA;  // Stocke le dernier message GGA reçu
 };
 #endif
+
