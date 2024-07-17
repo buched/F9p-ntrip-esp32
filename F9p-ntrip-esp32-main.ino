@@ -21,7 +21,8 @@ NTRIPClient ntrip_c;
 const char* udpAddress = "192.168.1.255";
 const int udpPort = 9999;
 
-int trans = 2;  // 0 = serial, 1 = udp, 2 = tcp client, 3 = serialrx, 4 = myserial Choose which output you want to use. for RS232 set 0 and connect tx F9P directly to RS232 module
+//Choose which output you want to use. for RS232 set 0 and connect tx F9P directly to RS232 module
+int trans = 1;  // 0 = serial, 1 = udp, 2 = tcp client, 3 = serialrx, 4 = myserial 5 = Bluetooth 
 
 WiFiUDP udp;
 
@@ -35,6 +36,8 @@ unsigned long currentMillis = 0;  // timer
 
 const long interval = 10000;     // Duration between 2 GGA Sending
 const long readDuration = 1000;  // Duration of NMEA reading in milliseconds
+
+BluetoothSerial SerialBT;
 
 void setup() {
     // put your setup code here, to run once:
@@ -54,6 +57,17 @@ void setup() {
     Serial.println("WiFi connected");
     Serial.println("IP address: ");
     Serial.println(WiFi.localIP());
+
+    // Initialiser le Bluetooth
+    switch (trans) {
+      case 5:
+        if (!SerialBT.begin("rover-gnss")) {
+         Serial.println("An error occurred initializing Bluetooth");
+        } else {
+          Serial.println("Bluetooth initialized with name 'rover-gnss'");
+        }
+        break;
+    }
 
     Serial.println("Requesting SourceTable.");
     if (ntrip_c.reqSrcTbl(host, httpPort)) {
@@ -159,6 +173,9 @@ void loop() {
                 break;
             case 4:  // MySerial out
                 MySerial.println(s);
+                break;
+            case 5: //BT
+                SerialBT.println(s);
                 break;
             default:  // mauvaise config
                 Serial.println("mauvais choix ou oubli de configuration");
