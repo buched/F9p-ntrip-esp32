@@ -15,6 +15,7 @@ int httpPort = 2101; // port 2101 is default port of NTRIP caster
 char* mntpnt = "ntrip caster's mountpoint";
 char* user   = "ntrip caster's client user";
 char* passwd = "ntrip caster's client password";
+bool sendGGA = true;
 NTRIPClient ntrip_c;
 
 const char* udpAddress = "192.168.1.255";
@@ -24,14 +25,16 @@ int trans = 2;  // 0 = serial, 1 = udp, 2 = tcp client, 3 = serialrx, 4 = myseri
 
 WiFiUDP udp;
 
-// 4 send GGA
+// send GGA 
 NTRIPClient ntripClient;
 String nmeaMessage = "";
 String ggaMessage = "";
 
-unsigned long previousMillis = 0;
-unsigned long currentMillis = 0; // Déclaration globale
-const long interval = 10000;  // Interval of 10 seconds
+unsigned long previousMillis = 0; // timer
+unsigned long currentMillis = 0;  // timer
+
+const long interval = 10000;     // Duration between 2 GGA Sending
+const long readDuration = 1000;  // Duration of NMEA reading in milliseconds
 
 void setup() {
     // put your setup code here, to run once:
@@ -58,7 +61,7 @@ void setup() {
         delay(5);
         while (ntrip_c.available()) {
             ntrip_c.readLine(buffer, sizeof(buffer));
-            Serial.print(buffer);
+            //Serial.print(buffer);
         }
     } else {
         Serial.println("SourceTable request error");
@@ -76,35 +79,50 @@ void setup() {
 
 void loop() {
 
-    WiFiClient client;
+  WiFiClient client;
+  if (sendGGA) {
+      currentMillis = millis();
+      if (currentMillis - previousMillis >= interval) {
+          previousMillis = currentMillis;
 
-    currentMillis = millis();
-    if (currentMillis - previousMillis >= interval) {
-        previousMillis = currentMillis;
+          unsigned long readStartMillis = millis();
+          bool ggaFound = false;
+          while (millis() - readStartMillis < readDuration && !ggaFound) {
+              while (Serialrx.available()) {
+                  char c = Serialrx.read();
+                  if (c == '\n' || c == '\r') {
+                      if (nmeaMessage.startsWith("$GNGGA") || nmeaMessage.startsWith("$GPGGA")) {
+                          // Validation du format GGA
+                          int numFields = 0;
+                          for (char ch : nmeaMessage) {
+                              if (ch == ',') numFields++;
+                          }
+                          if (numFields == 14) { // 14 virgules attendues dans un message GGA complet
+                              ntrip_c.setLastGGA(nmeaMessage);                  // Stocker le dernier message GGA reçu
+                              //Serial.println("Extracted GGA: " + nmeaMessage);  // Log du message GGA extrait
+                              ggaFound = true;                                  // Mettre à jour le drapeau pour arrêter la lecture
+                              break;                                            // Sortir de la boucle intérieure
+                          }
+                      }
+                      nmeaMessage = "";
+                  } else {
+                      nmeaMessage += c;
+                  }
+              }
+          }
 
-        // Envoyer le dernier message GGA stocké
-        String lastGGA = ntrip_c.getLastGGA();
-        if (lastGGA != "") {
-            ntrip_c.sendGGA(lastGGA.c_str(), host, httpPort, user, passwd, mntpnt);
-            Serial.println("Sent GGA: " + lastGGA);  // Log sent GGA message
-        } else {
-            Serial.println("No GGA message to send.");
-        }
+      // Send the last GGA message stored
+      String lastGGA = ntrip_c.getLastGGA();
+      if (lastGGA != "") {
+          ntrip_c.sendGGA(lastGGA.c_str(), host, httpPort, user, passwd, mntpnt);
+          Serial.println("Sent GGA: " + lastGGA);  // Log sent GGA message
+          lastGGA = "";
+          //Serial.println("Cleaned GGA");
+      } else {
+          Serial.println("No GGA message to send.");
+      }
     }
-
-    // Lire les messages NMEA
-    while (Serialrx.available()) {
-        char c = Serialrx.read();
-        if (c == '\n' || c == '\r') {
-            if (nmeaMessage.startsWith("$GNGGA")) {
-                ntrip_c.setLastGGA(nmeaMessage); // Stocker le dernier message GGA reçu
-                Serial.println("Extracted GGA: " + nmeaMessage);  // Log extracted GGA message
-            }
-            nmeaMessage = "";
-        } else {
-            nmeaMessage += c;
-        }
-    }
+  }
 
     while (ntrip_c.available()) {
         char ch = ntrip_c.read();
