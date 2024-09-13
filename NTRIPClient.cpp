@@ -26,7 +26,7 @@ bool NTRIPClient::reqSrcTbl(char* host,int &port)
      }
      delay(10);
   }
-  char buffer[12];
+  char buffer[20];
   readLine(buffer,sizeof(buffer));
   if(strstr(buffer,"SOURCETABLE 200 OK")!=NULL)
   {
